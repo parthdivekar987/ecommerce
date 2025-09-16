@@ -9,12 +9,11 @@ import {
 
 import { Avatar, Button, Menu, MenuItem } from "@mui/material";
 import { deepPurple } from "@mui/material/colors";
-import {navigation} from "./navigationData";
+import { navigation } from "./navigationData";
 import { useLocation, useNavigate } from "react-router-dom";
 import AuthModal from "../../Auth/AuthModal";
 import { useDispatch, useSelector } from "react-redux";
 import { getUser, logout } from "../../../State/Auth/Action";
-
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -22,16 +21,14 @@ function classNames(...classes) {
 
 export default function Navigation() {
   const [open, setOpen] = useState(false);
-  const navigate=useNavigate();
+  const navigate = useNavigate();
   const [openAuthModal, setOpenAuthModal] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const openUserMenu = Boolean(anchorEl);
   const jwt = localStorage.getItem("jwt");
-  const {auth}=useSelector(store=>store)
-  const dispatch=useDispatch();
-  const location=useLocation();
-
-
+  const { auth } = useSelector((store) => store);
+  const dispatch = useDispatch();
+  const location = useLocation();
 
   const handleUserClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -45,51 +42,33 @@ export default function Navigation() {
   };
   const handleClose = () => {
     setOpenAuthModal(false);
-    
   };
 
   const handleCategoryClick = (category, section, item, close) => {
     navigate(`/${category.id}/${section.id}/${item.id}`);
-
     close();
   };
 
-  
-  useEffect(()=>
-  {
-    if(jwt)
-    {
-       dispatch(getUser(jwt))
+  useEffect(() => {
+    if (jwt) {
+      dispatch(getUser(jwt));
     }
-    },[jwt,auth.jwt])
+  }, [jwt, auth.jwt]);
 
+  useEffect(() => {
+    if (auth.user) {
+      handleClose();
+    }
 
+    if (location.pathname === "/login" || location.pathname === "/register") {
+      navigate(-1);
+    }
+  }, [auth.user]);
 
-useEffect(()=>{
-  if(auth.user)
-  {
-    handleClose()
-  }
-
-  if(location.pathname=="/login" || location.pathname=="/register")
-  {
-    navigate(-1)
-  }
-
-},[auth.user])
-
-
-const handleLogout=()=>
-{
-  dispatch(logout())
-  handleCloseUserMenu()
-}
-
-
-
-
-
- 
+  const handleLogout = () => {
+    dispatch(logout());
+    handleCloseUserMenu();
+  };
 
   return (
     <div className="bg-white pb-10">
@@ -202,8 +181,10 @@ const handleLogout=()=>
                             >
                               {section.items.map((item) => (
                                 <li key={item.name} className="flow-root">
-                                  <p className="-m-2 block p-2 text-gray-500">
-                                    {"item.name"}
+                                  <p className="-m-2 block p-2 text-gray-500 cursor-pointer"
+                                     onClick={() => handleCategoryClick(category, section, item, () => setOpen(false))}>
+                                    {/* FIX #1: Removed quotes from item.name */}
+                                    {item.name}
                                   </p>
                                 </li>
                               ))}
@@ -228,16 +209,37 @@ const handleLogout=()=>
                   ))}
                 </div>
 
+                {/* FIX #2: Added conditional logic for Sign In / User Profile */}
                 <div className="space-y-6 border-t border-gray-200 px-4 py-6">
-                  <div className="flow-root">
-                    <a
-                      href="/"
-                      className="-m-2 block p-2 font-medium text-gray-900"
-                    >
-                      Sign in
-                    </a>
-                  </div>
+                    {auth.user?.firstName ? (
+                        <div>
+                            <div className="flow-root">
+                                <div className="-m-2 p-2 flex items-center">
+                                    <Avatar sx={{ bgcolor: deepPurple[500], color: "white", marginRight: '10px' }}>
+                                        {auth.user?.firstName[0].toUpperCase()}
+                                    </Avatar>
+                                    <span className="font-medium text-gray-900">Profile</span>
+                                </div>
+                            </div>
+                            <div className="flow-root mt-2">
+                                <p onClick={() => {navigate("/account/order"); setOpen(false);}} className="cursor-pointer -m-2 block p-2 font-medium text-gray-900">My Orders</p>
+                            </div>
+                            <div className="flow-root mt-2">
+                                <p onClick={()=>{handleLogout(); setOpen(false);}} className="cursor-pointer -m-2 block p-2 font-medium text-gray-900">Logout</p>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="flow-root">
+                        <p
+                            onClick={() => {handleOpen(); setOpen(false);}}
+                            className="cursor-pointer -m-2 block p-2 font-medium text-gray-900"
+                        >
+                            Sign in
+                        </p>
+                        </div>
+                    )}
                 </div>
+
 
                 <div className="border-t border-gray-200 px-4 py-6">
                   <a href="/" className="-m-2 flex items-center p-2">
@@ -277,14 +279,12 @@ const handleLogout=()=>
 
               {/* Logo */}
               <div className="ml-4 flex lg:ml-0">
-                
-                  <span className="sr-only">Your Company</span>
-                  <img
-                    src="https://www.shutterstock.com/image-vector/insane-single-word-letters-graffiti-260nw-2295014787.jpg"
-                    alt="Shopwithzosh"
-                    className="h-18 w-24 mr-2"
-                  />
-                
+                <span className="sr-only">Your Company</span>
+                <img
+                  src="https://www.shutterstock.com/image-vector/insane-single-word-letters-graffiti-260nw-2295014787.jpg"
+                  alt="Shopwithzosh"
+                  className="h-18 w-24 mr-2"
+                />
               </div>
 
               {/* Flyout menus */}
@@ -317,7 +317,6 @@ const handleLogout=()=>
                             leaveTo="opacity-0"
                           >
                             <Popover.Panel className="absolute inset-x-0 top-full text-sm text-gray-500">
-                              {/* Presentational element used to render the bottom shadow, if we put the shadow on the actual panel it pokes out the top, so we use this shorter element to hide the top of the shadow */}
                               <div
                                 className="absolute inset-0 top-1/2 bg-white shadow"
                                 aria-hidden="true"
@@ -367,7 +366,6 @@ const handleLogout=()=>
                                           >
                                             {section.name}
                                           </p>
-                                          {/* eslint-disable-next-line jsx-a11y/no-redundant-roles */}
                                           <ul
                                             role="list"
                                             aria-labelledby={`${section.name}-heading`}
@@ -419,7 +417,6 @@ const handleLogout=()=>
                 </div>
               </Popover.Group>
 
-             
               <div className="ml-auto flex items-center">
                 <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
                   {auth.user?.firstName ? (
@@ -430,7 +427,6 @@ const handleLogout=()=>
                         aria-controls={open ? "basic-menu" : undefined}
                         aria-haspopup="true"
                         aria-expanded={open ? "true" : undefined}
-                        // onClick={handleUserClick}
                         sx={{
                           bgcolor: deepPurple[500],
                           color: "white",
@@ -438,18 +434,7 @@ const handleLogout=()=>
                         }}
                       >
                         {auth.user?.firstName[0].toUpperCase()}
-
-                        {/* {false?.firstName[0].toUpperCase()} */}
                       </Avatar>
-                      {/* <Button
-                        id="basic-button"
-                        aria-controls={open ? "basic-menu" : undefined}
-                        aria-haspopup="true"
-                        aria-expanded={open ? "true" : undefined}
-                        onClick={handleUserClick}
-                      >
-                        Dashboard
-                      </Button> */}
                       <Menu
                         id="basic-menu"
                         anchorEl={anchorEl}
@@ -478,10 +463,8 @@ const handleLogout=()=>
 
                 {/*Search */}
                 <div className="flex items-center lg:ml-6">
-                
                   <p className="p-2 text-gray-400 hover:text-gray-500">
                     <span className="sr-only">Search</span>
-                    
                     <MagnifyingGlassIcon
                       className="h-6 w-6"
                       aria-hidden="true"
@@ -492,7 +475,6 @@ const handleLogout=()=>
                 {/* Cart */}
                 <div className="ml-4 flow-root lg:ml-6">
                   <Button
-                    
                     className="group -m-2 flex items-center p-2"
                   >
                     <ShoppingBagIcon
@@ -510,7 +492,7 @@ const handleLogout=()=>
           </div>
         </nav>
       </header>
-      <AuthModal handleClose={handleClose}  open={openAuthModal}/>
+      <AuthModal handleClose={handleClose} open={openAuthModal} />
     </div>
   );
 }

@@ -1,18 +1,21 @@
+// src/config/apiConfig.js
 import axios from "axios";
 
-export const API_BASE_URL = "http://localhost:5454";
+export const API_BASE_URL = "ecommerce-backend-production-96f4.up.railway.app";
 
-// The token is read from localStorage HERE, only once.
-const jwt = localStorage.getItem("jwt");
-
-// You can log it right after you get it
-console.log("JWT Token on initial file load:", jwt);
-
+// ✅ Create axios instance
 export const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    // There is an extra space in " Authorization" which might cause issues.
-    "Authorization": `Bearer ${jwt}`,
-    'Content-Type': "application/json"
+    "Content-Type": "application/json"
   }
+});
+
+// ✅ Add token dynamically for each request
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("jwt");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });

@@ -1,32 +1,22 @@
-import { Grid, TextField, Button } from '@mui/material';
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Navigate } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom'
-import { getUser, register } from '../../State/Auth/Action';
-import { store } from '../../State/store';
+import React, { useEffect } from "react";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import { useDispatch, useSelector } from "react-redux";
+import { register, getUser } from "../../State/Auth/Action";
 
-const RegisterForm = () => {
-  const navigate = useNavigate();
-  const dispatch=useDispatch();
-  const jwt=localStorage.getItem("jwt")
-  const {auth}=useSelector(store=>store)
+function RegisterForm({ switchToLogin }) {
+  const dispatch = useDispatch();
+  const jwt = localStorage.getItem("jwt");
+  const auth = useSelector((store) => store.auth);
 
-useEffect(()=>
-{
-  if(jwt)
-  {
-     dispatch(getUser(jwt))
-  }
-  },[jwt,auth.jwt])
-
-
- 
-
+  useEffect(() => {
+    if (jwt) {
+      dispatch(getUser(jwt));
+    }
+  }, [jwt, auth.jwt, dispatch]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log("Handling form submission...");
 
     const data = new FormData(event.currentTarget);
 
@@ -34,14 +24,18 @@ useEffect(()=>
       firstName: data.get("firstName"),
       lastName: data.get("lastName"),
       email: data.get("email"),
-      password: data.get("password")
-    }
-    dispatch(register(userData))
-    console.log("UserData", userData)
+      password: data.get("password"),
+    };
+
+    dispatch(register(userData));
+    console.log("Register data:", userData);
+
+    // Optional: after successful register you can call switchToLogin or close modal
+    // switchToLogin();
   };
 
   return (
-    <div>
+    <>
       <form onSubmit={handleSubmit}>
         <div style={{ display: "flex", gap: "1rem" }}>
           <div style={{ flex: 1 }}>
@@ -89,39 +83,27 @@ useEffect(()=>
         </div>
         <div>
           <Button
-            className="w-full bg-indigo-700 text-white p-2 my-4 rounded-lg"
+            className="w-full"
             variant="contained"
             type="submit"
             size="large"
-            sx={{
-              padding: ".8rem 0",
-              marginTop: "1rem",
-              backgroundColor: "#9155FD",
-            }}
+            sx={{ padding: ".8rem 0", marginTop: "1rem", bgcolor: "#4F39F6" }}
           >
             Register
           </Button>
         </div>
       </form>
 
-      <div className="flex items-center justify-center py-3">
-        <p className="text-sm text-gray-600">
-          if you have an account already?
-        </p>
-        <Button
-          onClick={() => navigate("/login")}
-          size="small"
-          sx={{ marginLeft: '0.5rem' }}
-        >
-          Login
-        </Button>
+      <div className="flex justify-center">
+        <div className="py-3 flex items-center">
+          <p>If you have already account?</p>
+          <Button onClick={switchToLogin} className="ml-5">
+            Login
+          </Button>
+        </div>
       </div>
-
-
-
-    </div>
+    </>
   );
-};
+}
 
 export default RegisterForm;
-

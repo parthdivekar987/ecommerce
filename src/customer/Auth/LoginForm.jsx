@@ -1,36 +1,32 @@
-import { Grid, TextField, Button } from '@mui/material';
-import React from 'react';
-import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { login } from '../../State/Auth/Action';
+import React from "react";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import { useDispatch } from "react-redux";
+import { login } from "../../State/Auth/Action"; // Import your login action
 
-const LoginForm = () => {
-  const dispatch=useDispatch();
+function LoginForm({ switchToRegister, handleClose }) {
+  const dispatch = useDispatch();
 
-    const navigate=useNavigate();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
 
-    
-    
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        console.log("Handling form submission...");
-
-        const data=new FormData(event.currentTarget);
-
-        const userData={
-
-          email:data.get("email"),
-          password:data.get("password")
-        }
-        dispatch(login(userData))
-        console.log("UserData", userData)
+    const userData = {
+      email: data.get("email"),
+      password: data.get("password"),
     };
 
-    return (
-        <div>
-            <form onSubmit={handleSubmit}>
-        <div style={{ display: "flex", gap: "1rem" }}>
-          
+    // Dispatch login action here
+    // Optionally await response if login returns a promise
+    await dispatch(login(userData));
+
+    // After login success, close modal
+    handleClose();
+  };
+
+  return (
+    <>
+      <form onSubmit={handleSubmit}>
         <div>
           <TextField
             required
@@ -48,44 +44,35 @@ const LoginForm = () => {
             id="password"
             name="password"
             label="Password"
+            type="password"
             fullWidth
-            autoComplete="new-password"
+            autoComplete="current-password"
             style={{ marginTop: "1rem" }}
           />
         </div>
-        </div>
         <div>
           <Button
-            className="w-full bg-indigo-700 text-white p-2 my-4 rounded-lg"
+            className="w-full"
             variant="contained"
             type="submit"
             size="large"
-            sx={{
-              padding: ".8rem 0",
-              marginTop: "1rem",
-              backgroundColor: "#9155FD",
-            }}
+            sx={{ padding: ".8rem 0", marginTop: "1rem", bgcolor: "#4F39F6" }}
           >
             Login
           </Button>
         </div>
       </form>
 
-       <div className="flex items-center justify-center py-3">
-              <p className="text-sm text-gray-600">
-                if you dont have Account?
-              </p>
-              <Button
-                onClick={() => navigate("/register")}
-                size="small"
-                sx={{ marginLeft: '0.5rem' }}
-              >
-                Register
-              </Button>
-            </div>
+      <div className="flex justify-center">
+        <div className="py-3 flex items-center">
+          <p>If you don't have an account?</p>
+          <Button onClick={switchToRegister} className="ml-5">
+            Register
+          </Button>
         </div>
-    );
-};
+      </div>
+    </>
+  );
+}
 
 export default LoginForm;
-

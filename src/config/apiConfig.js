@@ -1,7 +1,9 @@
 // src/config/apiConfig.js
 import axios from "axios";
 
-export const API_BASE_URL = "https://ecommerce-backend-production-96f4.up.railway.app";
+// export const API_BASE_URL = "https://ecommerce-backend-production-96f4.up.railway.app";
+export const API_BASE_URL = "http://localhost:5454";
+
 
 // ✅ Create axios instance
 export const api = axios.create({

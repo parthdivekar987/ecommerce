@@ -103,7 +103,7 @@ export const deleteProduct = (productId) => async (dispatch) => {
 
     dispatch({
       type: DELETE_PRODUCT_SUCCESS,
-      payload: data,
+      payload: productId,
     });
 
   } catch (error) {

@@ -23,7 +23,7 @@ export const customerProductReducer =(state = initialState, action) =>{
             return  { ...state, loading: false, product: action.payload, error: null }; 
 
         case DELETE_PRODUCT_SUCCESS:
-            return { ...state, loading: false, error: null, deletedProduct: action.payload }
+            return { ...state, loading: false, error: null, product:state.products.filter((item)=>item.id!==action.payload ) }
 
             case FIND_PRODUCT_FAILURE:
                 case FIND_PRODUCT_BY_ID_FAILURE:

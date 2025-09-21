@@ -18,7 +18,6 @@ import {
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
-// These actions are correctly imported to be used in the component
 import { deleteProduct, findProducts } from '../../State/Product/Action';
 
 const ProductsTable = () => {
@@ -31,8 +30,6 @@ const ProductsTable = () => {
   const searchParams = new URLSearchParams(location.search);
   const pageNumber = parseInt(searchParams.get("page")) || 1;
 
-  // STEP 2: This function is called when the delete button is clicked.
-  // It dispatches the 'deleteProduct' action with the product's ID.
   const handleProductDelete = (productId) => {
     dispatch(deleteProduct(productId));
   };
@@ -43,9 +40,6 @@ const ProductsTable = () => {
     navigate({ search: `?${query}` });
   };
 
-  // STEP 3: This useEffect hook listens for changes. When 'product.deletedProduct'
-  // is updated in the Redux store (after a successful deletion), this hook
-  // re-runs and calls 'findProducts' to refresh the table data.
   useEffect(() => {
     const data = {
       category: "",
@@ -64,7 +58,8 @@ const ProductsTable = () => {
 
   const tableCellStyles = {
     color: 'white',
-    borderColor: 'rgba(255, 255, 255, 0.12)'
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+    transition: 'color 0.3s ease', // Added for a smooth color transition
   };
 
   return (
@@ -103,24 +98,29 @@ const ProductsTable = () => {
                       key={item.id}
                       sx={{ 
                         "&:last-child td, &:last-child th": { border: 0 },
-                        '&:hover': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                          cursor: 'pointer',
+                        // MODIFICATION: Apply hover styles ONLY to cells with the 'hover-target' class
+                        '&:hover .hover-target': {
+                          color: '#1976d2', // Changes text color to a primary blue on hover
                         },
+                        cursor: 'pointer',
                       }}
                     >
+                      {/* This cell will NOT change color */}
                       <TableCell sx={tableCellStyles}>
                         <Avatar src={item.imageUrl}></Avatar>
                       </TableCell>
-                      <TableCell component="th" scope="row" sx={tableCellStyles}>
+
+                      {/* These cells WILL change color because they have the 'hover-target' className */}
+                      <TableCell component="th" scope="row" sx={tableCellStyles} className="hover-target">
                         {item.title}
                       </TableCell>
-                      <TableCell align="left" sx={tableCellStyles}>{item.id}</TableCell>
-                      <TableCell align="left" sx={tableCellStyles}>{item.category?.name}</TableCell>
-                      <TableCell align="left" sx={tableCellStyles}>₹{item.price}</TableCell>
-                      <TableCell align="left" sx={tableCellStyles}>{item.quantity}</TableCell>
+                      <TableCell align="left" sx={tableCellStyles} className="hover-target">{item.id}</TableCell>
+                      <TableCell align="left" sx={tableCellStyles} className="hover-target">{item.category?.name}</TableCell>
+                      <TableCell align="left" sx={tableCellStyles} className="hover-target">₹{item.price}</TableCell>
+                      <TableCell align="left" sx={tableCellStyles} className="hover-target">{item.quantity}</TableCell>
+
+                      {/* This cell will NOT change color */}
                       <TableCell align="left" sx={tableCellStyles}>
-                        {/* STEP 1: The onClick event starts the deletion process */}
                         <Button onClick={() => handleProductDelete(item.id)} variant="contained" color="error">
                           Delete
                         </Button>

@@ -60,7 +60,7 @@ export default function ProductDetails() {
   const params = useParams();
   const dispatch = useDispatch();
 
-  const { product: { product, loading, error } } = useSelector((store) => store);
+  const { product, loading, error } = useSelector((store) => store.products);
   const { auth } = useSelector((store) => store);
 
   const handleAddToCart = () => {

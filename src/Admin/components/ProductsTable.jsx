@@ -25,7 +25,9 @@ const ProductsTable = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { product } = useSelector(store => store);
+  // FIX: Changed 'store.product' to 'store.products' to match your Redux store configuration.
+  // We select the 'products' slice and rename it to 'product' for use in this component.
+  const { products: product } = useSelector(store => store);
 
   const searchParams = new URLSearchParams(location.search);
   const pageNumber = parseInt(searchParams.get("page")) || 1;
@@ -54,12 +56,12 @@ const ProductsTable = () => {
       stock: "",
     };
     dispatch(findProducts(data));
-  }, [pageNumber, product.deletedProduct, dispatch]);
+  }, [pageNumber, product?.deletedProduct, dispatch]); // Added optional chaining for safety
 
   const tableCellStyles = {
     color: 'white',
     borderColor: 'rgba(255, 255, 255, 0.12)',
-    transition: 'color 0.3s ease', // Added for a smooth color transition
+    transition: 'color 0.3s ease',
   };
 
   return (
@@ -98,19 +100,15 @@ const ProductsTable = () => {
                       key={item.id}
                       sx={{ 
                         "&:last-child td, &:last-child th": { border: 0 },
-                        // MODIFICATION: Apply hover styles ONLY to cells with the 'hover-target' class
                         '&:hover .hover-target': {
-                          color: '#1976d2', // Changes text color to a primary blue on hover
+                          color: '#1976d2',
                         },
                         cursor: 'pointer',
                       }}
                     >
-                      {/* This cell will NOT change color */}
                       <TableCell sx={tableCellStyles}>
                         <Avatar src={item.imageUrl}></Avatar>
                       </TableCell>
-
-                      {/* These cells WILL change color because they have the 'hover-target' className */}
                       <TableCell component="th" scope="row" sx={tableCellStyles} className="hover-target">
                         {item.title}
                       </TableCell>
@@ -118,8 +116,6 @@ const ProductsTable = () => {
                       <TableCell align="left" sx={tableCellStyles} className="hover-target">{item.category?.name}</TableCell>
                       <TableCell align="left" sx={tableCellStyles} className="hover-target">₹{item.price}</TableCell>
                       <TableCell align="left" sx={tableCellStyles} className="hover-target">{item.quantity}</TableCell>
-
-                      {/* This cell will NOT change color */}
                       <TableCell align="left" sx={tableCellStyles}>
                         <Button onClick={() => handleProductDelete(item.id)} variant="contained" color="error">
                           Delete

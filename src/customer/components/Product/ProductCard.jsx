@@ -1,3 +1,4 @@
+// CORRECTED FILE: ProductCard.jsx
 import { useNavigate } from "react-router-dom";
 import "./ProductCard.css";
 
@@ -9,7 +10,6 @@ const ProductCard = ({ product }) => {
       onClick={() => navigate(`/product/${product.id}`)}
       className="productCard w-[15rem] m-3 transition-all cursor-pointer"
     >
-      {/* Product Image */}
       <div className="h-[20rem]">
         <img
           className="h-full w-full object-cover object-left-top"
@@ -18,7 +18,6 @@ const ProductCard = ({ product }) => {
         />
       </div>
 
-      {/* Product Details */}
       <div className="textPart bg-white p-3 transition-all">
         <div>
           <p className="font-bold opacity-60">{product.brand}</p>
@@ -27,12 +26,13 @@ const ProductCard = ({ product }) => {
         <div className="flex items-center space-x-2">
           <p className="font-semibold">₹{product.discountedPrice}</p>
           <p className="line-through opacity-50">₹{product.price}</p>
+          {/* FIX: Corrected property name from discountPercent to discountPersent */}
           <p className="text-green-600 font-semibold">
-            {product.discountPercent}%
+            {product.discountPersent}% 
           </p>
         </div>
       </div>
-      </div>
+    </div>
   );
 };
 

@@ -1,7 +1,7 @@
 "use client";
-import { mens_kurta } from "../../../Data/mens_kurta";
-import { filters, singleFilter } from "./FilterData";
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -30,9 +30,8 @@ import {
   PlusIcon,
   Squares2X2Icon,
 } from "@heroicons/react/20/solid";
+import { filters, singleFilter } from "./FilterData";
 import ProductCard from "./ProductCard";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 import { findProducts } from "../../../State/Product/Action";
 
 const sortOptions = [
@@ -51,7 +50,10 @@ export default function Product() {
   const navigate = useNavigate();
   const param = useParams();
   const dispatch = useDispatch();
-  const { product } = useSelector(store => store);
+
+  // FIX 1: Correctly select the 'products' slice from the store.
+  // We rename it to 'productData' to avoid confusion inside the component.
+  const { products: productData } = useSelector((store) => store);
 
   const decodedQueryString = decodeURIComponent(location.search);
   const searchParamms = new URLSearchParams(decodedQueryString);
@@ -110,11 +112,10 @@ export default function Product() {
       minDiscount: disccount || 0,
       sort: sortValue || "price_low",
       pageNumber: pageNumber - 1,
-      pageSize: 12, // The number of products to display per page is changed to 12.
+      pageSize: 12,
       stock: stock,
     };
 
-    console.log("✅ Dispatching findProducts with data:", data);
     dispatch(findProducts(data));
   }, [
     param.lavelThree,
@@ -125,7 +126,7 @@ export default function Product() {
     sortValue,
     pageNumber,
     stock,
-    dispatch
+    dispatch,
   ]);
 
   return (
@@ -389,11 +390,15 @@ export default function Product() {
                 </form>
               </div>
 
+              {/* Product grid */}
               <div className="lg:col-span-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                  {product.products && product.products?.content?.map((item) => (
+                  
+                  {/* FIX 2: Use the corrected variable 'productData' to map over the products */}
+                  {productData.products && productData.products?.content?.map((item) => (
                     <ProductCard key={item.id} product={item} />
                   ))}
+
                 </div>
               </div>
             </div>
@@ -401,12 +406,15 @@ export default function Product() {
 
           <section className="w-full px-4 py-10 flex justify-center">
             <Stack spacing={2}>
+              
+              {/* FIX 3: Use the corrected variable 'productData' for pagination */}
               <Pagination
-                count={product.products?.totalPages}
+                count={productData.products?.totalPages}
                 color="primary"
                 onChange={handlePaginationChange}
                 page={parseInt(pageNumber)}
               />
+              
             </Stack>
           </section>
         </main>

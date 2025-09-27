@@ -51,8 +51,6 @@ export default function Product() {
   const param = useParams();
   const dispatch = useDispatch();
 
-  // FIX 1: Correctly select the 'products' slice from the store.
-  // We rename it to 'productData' to avoid confusion inside the component.
   const { products: productData } = useSelector((store) => store);
 
   const decodedQueryString = decodeURIComponent(location.search);
@@ -393,12 +391,9 @@ export default function Product() {
               {/* Product grid */}
               <div className="lg:col-span-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                  
-                  {/* FIX 2: Use the corrected variable 'productData' to map over the products */}
-                  {productData.products && productData.products?.content?.map((item) => (
+                  {productData.products && productData.products.content?.map((item) => (
                     <ProductCard key={item.id} product={item} />
                   ))}
-
                 </div>
               </div>
             </div>
@@ -406,15 +401,12 @@ export default function Product() {
 
           <section className="w-full px-4 py-10 flex justify-center">
             <Stack spacing={2}>
-              
-              {/* FIX 3: Use the corrected variable 'productData' for pagination */}
               <Pagination
                 count={productData.products?.totalPages}
                 color="primary"
                 onChange={handlePaginationChange}
                 page={parseInt(pageNumber)}
               />
-              
             </Stack>
           </section>
         </main>
